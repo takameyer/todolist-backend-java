@@ -4,7 +4,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Document(collection = "Item")
@@ -16,14 +18,16 @@ public class Item {
     private String owner_id;
 
     @CreatedDate
-    private LocalDateTime created_at;
+    private Instant created_at;
+
+    @CreatedDate
+    private Instant createdDate;
 
     public Item() {}
 
-    public Item(String id, String summary, Boolean isCompleted, String owner_id, Date created_at) {
+    public Item(String summary) {
         this.summary = summary;
-        this.isCompleted = isCompleted ? Boolean.TRUE : Boolean.FALSE;
-        this.owner_id = owner_id;
+        this.isCompleted = false;
     }
 
     public String getId() {
@@ -50,19 +54,11 @@ public class Item {
         this.isCompleted = isCompleted;
     }
 
-    public String getOwner_id() {
-        return owner_id;
-    }
-
-    public void setOwner_id(String owner_id) {
-        this.owner_id = owner_id;
-    }
-
-    public LocalDateTime getCreated_at() {
+    public Instant getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public Instant getCreatedDate() {
+        return createdDate;
     }
 }
