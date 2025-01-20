@@ -1,7 +1,7 @@
 package com.takameyer.TodoListBackend.controller;
 
-import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.entity.ItemMongo;
-import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBRepository;
+import com.takameyer.TodoListBackend.domain.model.Item;
+import com.takameyer.TodoListBackend.service.ItemService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,41 +12,43 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/items")
 public class ItemController {
-    private final MongoDBRepository<ItemMongo> itemRepository;
+    private final ItemService itemService;
 
     @Autowired
-    public ItemController(MongoDBRepository<ItemMongo> itemRepository) {
-        this.itemRepository = itemRepository;
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
     }
 
     @GetMapping
-    public List<ItemMongo> getAllItems() {
-        return itemRepository.findAll();
+    public List<Item> getAllItems() {
+        return itemService.findAll();
     }
 
     @PostMapping
-    public ItemMongo createItem(@RequestBody ItemMongo item) {
-        return itemRepository.save(item);
+    public Item createItem(@RequestBody Item item) {
+        return itemService.save(item);
     }
 
     @GetMapping("/{id}")
-    public Optional<ItemMongo> getItemById(@PathVariable String id) {
-        return itemRepository.findById(id);
+    public Optional<Item> getItemById(@PathVariable String id) {
+        return itemService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ItemMongo updateItem(@PathVariable String id, @RequestBody ItemMongo updatedItem) {
-        return itemRepository.findById(id).map(item -> {
-            ItemMongo newItem = new ItemMongo(updatedItem.id(), updatedItem.summary(), updatedItem.isComplete(), updatedItem.ownerId());
-            return itemRepository.save(newItem);
+    public Item updateItem(@PathVariable String id, @RequestBody Item updatedItem) {
+        return itemService.findById(id).map(item -> {
+            Item newItem = new Item(updatedItem.id(), updatedItem.summary(), updatedItem.isComplete(), updatedItem.ownerId());
+            return itemService.save(newItem);
         }).orElseGet(() -> {
-            ItemMongo newItem = new ItemMongo(new ObjectId(), updatedItem.summary(), updatedItem.isComplete(), updatedItem.ownerId());
-            return itemRepository.save(newItem);
+            // If the item does not exist, create a new item with the provided ID
+            // TODO: Should this be different for SQL databases?
+            Item newItem = new Item(new ObjectId().toHexString(), updatedItem.summary(), updatedItem.isComplete(), updatedItem.ownerId());
+            return itemService.save(newItem);
         });
     }
 
     @DeleteMapping("/{id}")
     public void deleteItem(@PathVariable String id) {
-        itemRepository.deleteById(id);
+        itemService.deleteById(id);
     }
 }

@@ -7,8 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.entity.ItemMongo;
-import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBRepository;
+import com.takameyer.TodoListBackend.domain.model.Item;
+import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBItemRepository;
+import com.takameyer.TodoListBackend.service.ItemService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
@@ -31,7 +32,7 @@ class ItemControllerTests {
 	private Integer port;
 
 	@Autowired
-	private MongoDBRepository<ItemMongo> itemRepository;
+	private ItemService itemService;
 
 	static MongoDBContainer mongodb = new MongoDBContainer("mongo:7.0");
 
@@ -55,15 +56,15 @@ class ItemControllerTests {
 	@BeforeEach
 	void setUp() {
 		RestAssured.baseURI = "http://localhost:" + port;
-		itemRepository.deleteAll();
+		itemService.deleteAll();
 	}
 
 	@Test void shouldGetAllItems() throws JsonProcessingException {
-		List<ItemMongo> items = List.of(
-				new ItemMongo("Get groceries"),
-				new ItemMongo("Call Mom")
+		List<Item> items = List.of(
+				new Item("1", "Item 1", false, "1"),
+				new Item("2", "Item 2", true, "2")
 		);
-		itemRepository.saveAll(items);
+		itemService.saveAll(items);
 
 		String json =  given()
 				.contentType(ContentType.JSON)

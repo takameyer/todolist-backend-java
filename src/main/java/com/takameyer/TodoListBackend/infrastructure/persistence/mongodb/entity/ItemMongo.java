@@ -1,9 +1,11 @@
 package com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.entity;
 
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -25,10 +27,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 //}
 
 public record ItemMongo(
-    @Id ObjectId id,
+    @BsonId ObjectId id,
     String summary,
     Boolean isComplete,
-    @Field("owner_id") String ownerId
+    @BsonProperty("owner_id") String ownerId
 ) {
     public ItemMongo {
         if (isComplete == null) {
