@@ -7,14 +7,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.takameyer.TodoListBackend.model.Item;
-import com.takameyer.TodoListBackend.repository.ItemRepository;
+import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.entity.ItemMongo;
+import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
@@ -34,9 +31,10 @@ class ItemControllerTests {
 	private Integer port;
 
 	@Autowired
-	private ItemRepository itemRepository;
+	private MongoDBRepository<ItemMongo> itemRepository;
 
 	static MongoDBContainer mongodb = new MongoDBContainer("mongo:7.0");
+
 
 	@BeforeAll
 	static void beforeAll() {
@@ -51,7 +49,7 @@ class ItemControllerTests {
 	@DynamicPropertySource
 	static void configureProperties(DynamicPropertyRegistry registry) {
 		// ReplicaSetUrl automatically gets a database set
-		registry.add("spring.data.mongodb.uri", mongodb::getReplicaSetUrl);
+		registry.add("mongodb.uri", mongodb::getReplicaSetUrl);
 	}
 
 	@BeforeEach
@@ -61,9 +59,9 @@ class ItemControllerTests {
 	}
 
 	@Test void shouldGetAllItems() throws JsonProcessingException {
-		List<Item> items = List.of(
-				new Item("Get groceries"),
-				new Item("Call Mom")
+		List<ItemMongo> items = List.of(
+				new ItemMongo("Get groceries"),
+				new ItemMongo("Call Mom")
 		);
 		itemRepository.saveAll(items);
 

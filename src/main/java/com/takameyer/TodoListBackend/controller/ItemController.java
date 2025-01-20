@@ -1,7 +1,8 @@
 package com.takameyer.TodoListBackend.controller;
 
-import com.takameyer.TodoListBackend.model.Item;
-import com.takameyer.TodoListBackend.repository.ItemRepository;
+import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.entity.ItemMongo;
+import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,34 +12,36 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/items")
 public class ItemController {
+    private final MongoDBRepository<ItemMongo> itemRepository;
 
     @Autowired
-    private ItemRepository itemRepository;
+    public ItemController(MongoDBRepository<ItemMongo> itemRepository) {
+        this.itemRepository = itemRepository;
+    }
 
     @GetMapping
-    public List<Item> getAllItems() {
+    public List<ItemMongo> getAllItems() {
         return itemRepository.findAll();
     }
 
     @PostMapping
-    public Item createItem(@RequestBody Item item) {
+    public ItemMongo createItem(@RequestBody ItemMongo item) {
         return itemRepository.save(item);
     }
 
     @GetMapping("/{id}")
-    public Optional<Item> getItemById(@PathVariable String id) {
+    public Optional<ItemMongo> getItemById(@PathVariable String id) {
         return itemRepository.findById(id);
     }
 
     @PutMapping("/{id}")
-    public Item updateItem(@PathVariable String id, @RequestBody Item updatedItem) {
+    public ItemMongo updateItem(@PathVariable String id, @RequestBody ItemMongo updatedItem) {
         return itemRepository.findById(id).map(item -> {
-            item.setSummary(updatedItem.getSummary());
-            item.setIsCompleted(updatedItem.getIsCompleted());
-            return itemRepository.save(item);
+            ItemMongo newItem = new ItemMongo(updatedItem.id(), updatedItem.summary(), updatedItem.isComplete(), updatedItem.ownerId());
+            return itemRepository.save(newItem);
         }).orElseGet(() -> {
-            updatedItem.setId(id);
-            return itemRepository.save(updatedItem);
+            ItemMongo newItem = new ItemMongo(new ObjectId(), updatedItem.summary(), updatedItem.isComplete(), updatedItem.ownerId());
+            return itemRepository.save(newItem);
         });
     }
 
