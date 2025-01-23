@@ -5,6 +5,7 @@ import com.mongodb.client.MongoClients;
 import com.takameyer.TodoListBackend.domain.model.Item;
 import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBItemRepository;
 import com.takameyer.TodoListBackend.infrastructure.persistence.shared.ItemRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,11 +20,6 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
-//    public ItemService(@Value("${mongodb.uri}") String mongoUri, @Value("${mongodb.database}") String databaseName) {
-//        MongoClient mongoClient = MongoClients.create(mongoUri);
-//        this.itemRepository =  new MongoDBItemRepository(mongoClient, databaseName, "Item" );
-//    }
-
     @Autowired
     public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
@@ -33,14 +29,17 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
+    @Transactional
     public Item save(Item item) {
         return itemRepository.save(item);
     }
 
+    @Transactional
     public boolean update(Item item) {
         return itemRepository.update(item.id(), item);
     }
 
+    @Transactional
     public List<Item> saveAll(List<Item> items) {
         return itemRepository.saveAll(items);
     }
@@ -49,10 +48,12 @@ public class ItemService {
         return itemRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(String id) {
         itemRepository.deleteById(id);
     }
 
+    @Transactional
     public void deleteAll() {
         itemRepository.deleteAll();
     }

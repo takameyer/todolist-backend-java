@@ -18,9 +18,6 @@ abstract class AbstractItemRepositoryTests {
     @Autowired
     protected ItemService itemService;
 
-    @Autowired
-    protected ItemRepository itemRepository;
-
     @BeforeEach
     void setUp() {
         itemService.deleteAll();
