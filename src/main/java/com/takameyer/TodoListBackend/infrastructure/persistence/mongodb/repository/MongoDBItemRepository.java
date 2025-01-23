@@ -20,12 +20,10 @@ import java.util.Optional;
 
 @Repository
 public class MongoDBItemRepository implements ItemRepository {
-    private final MongoDatabase database;
     private final MongoCollection<ItemMongo> collection;
 
     @Autowired
     public MongoDBItemRepository(MongoDatabase database) {
-        this.database = database;
         this.collection = database.getCollection("Item", ItemMongo.class);
     }
 
