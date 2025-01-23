@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-@Repository
 public interface ItemRepository {
     Item save(Item item);
     List<Item> saveAll(List<Item> items);

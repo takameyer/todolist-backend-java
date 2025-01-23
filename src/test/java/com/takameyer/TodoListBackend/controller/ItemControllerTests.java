@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.takameyer.TodoListBackend.domain.model.Item;
-import com.takameyer.TodoListBackend.infrastructure.persistence.mongodb.repository.MongoDBItemRepository;
 import com.takameyer.TodoListBackend.service.ItemService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
